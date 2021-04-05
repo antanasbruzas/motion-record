@@ -11,12 +11,11 @@ with gpiod.Chip('gpiochip0') as chip:
     try:
         while True:
             val = line.get_value()
-            # Send every 30 minutes
             if (lastval != val):
                 # send all messages to port 8000 on the remote machine
                 try: 
                     if (val):
-                        target = liblo.Address('osc.udp://192.168.11.81:8000')
+                        target = liblo.Address('osc.udp://192.168.8.102:8000')
                         # send message "/record" with int argument
                         liblo.send(target, "/record", 1)
                         # send message "/play" with int argument 
