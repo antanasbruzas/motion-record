@@ -21,8 +21,8 @@ with gpiod.Chip('gpiochip0') as chip:
                 # Could be expensive
                 motionTimestamp = time.time()
                 if (not recording):
-                    # Send message "/record" with int argument
-                    liblo.send(target, "/record", 1)
+                    # Send message "/record"
+                    liblo.send(target, "/record")
                     # Send message "/play" with int argument 
                     liblo.send(target, "/play", 1)
                     recording = True
