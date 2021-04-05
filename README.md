@@ -5,4 +5,4 @@ Trigger DAW recording with OSC when detected by PIR sensor
 `sudo apt install python3-libgpiod python3-liblo`
 
 ## Run
-`python3 motion-record.py`
+`python3 motion-record.py 'osc.udp://192.168.8.102:8000'`
