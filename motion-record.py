@@ -6,28 +6,36 @@ import liblo
 with gpiod.Chip('gpiochip0') as chip:
     # TXD1 (GPIO14)
     line = chip.get_line(14)
-    line.request(consumer='motion-record', type=gpiod.LINE_REQ_DIR_IN)
-    lastval = 0
+    line.request(consumer=sys.argv[0], type=gpiod.LINE_REQ_DIR_IN)
+    recording = False
     try:
+        if (len(sys.argv) > 1):
+            # Send all messages to arg specified target
+            target = liblo.Address(sys.argv[1]) 
+        else:
+            # Send all messages to port 8000 on localhost
+            target = liblo.Address(8000)
         while True:
             val = line.get_value()
-            if (lastval != val):
-                # send all messages to port 8000 on the remote machine
-                try: 
-                    if (val):
-                        target = liblo.Address('osc.udp://192.168.8.102:8000')
-                        # send message "/record" with int argument
-                        liblo.send(target, "/record", 1)
-                        # send message "/play" with int argument 
-                        liblo.send(target, "/play", 1)
-                        print("play")
-                    else:
-                        # send message "/stop" without arguments
-                        liblo.send(target, "/stop")
-                        print("stop")
-                except liblo.AddressError as err:
-                    print(err)
-            lastval = val
+            if (val):
+                # Could be expensive
+                motionTimestamp = time.time()
+                if (not recording):
+                    # Send message "/record" with int argument
+                    liblo.send(target, "/record", 1)
+                    # Send message "/play" with int argument 
+                    liblo.send(target, "/play", 1)
+                    recording = True
+                    print("play")
+            else:
+                # Send only if no motion was detected for 30 minutes
+                if (recording and time.time() - motionTimestamp > 1800):
+                    # Send message "/stop" without arguments
+                    liblo.send(target, "/stop")
+                    recording = False;
+                    print("stop")
             time.sleep(0.1)
+    except liblo.AddressError as err:
+        print(err)
     except KeyboardInterrupt:
         sys.exit(130)
