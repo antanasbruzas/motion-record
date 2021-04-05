@@ -8,5 +8,5 @@ def f():
 
 
 def test_mytest():
-    with pytest.raises(AddressError):
+    with pytest.raises(liblo.AddressError):
         f()
