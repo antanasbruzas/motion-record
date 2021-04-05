@@ -1,2 +1,2 @@
 gpiod>=1.2
-pyliblo3>=0.10
+pyliblo>=0.10
