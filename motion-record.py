@@ -4,14 +4,18 @@ import time
 import liblo
 
 with gpiod.Chip('gpiochip0') as chip:
-    # TXD1 (GPIO14)
-    line = chip.get_line(14)
+    if (len(sys.argv) > 1):
+        # Use arg specified line
+        line = chip.get_line(sys.argv[1])
+    else:
+        # TXD1 (GPIO14)
+        line = chip.get_line(14)
     line.request(consumer=sys.argv[0], type=gpiod.LINE_REQ_DIR_IN)
     recording = False
     try:
-        if (len(sys.argv) > 1):
+        if (len(sys.argv) > 2):
             # Send all messages to arg specified target
-            target = liblo.Address(sys.argv[1]) 
+            target = liblo.Address(sys.argv[2]) 
         else:
             # Send all messages to port 8000 on localhost
             target = liblo.Address(8000)
