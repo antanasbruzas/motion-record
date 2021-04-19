@@ -6,7 +6,7 @@ import liblo
 with gpiod.Chip('gpiochip0') as chip:
     if (len(sys.argv) > 1):
         # Use arg specified line
-        line = chip.get_line(sys.argv[1])
+        line = chip.get_line(int(sys.argv[1]))
     else:
         # TXD1 (GPIO14)
         line = chip.get_line(14)
@@ -34,8 +34,11 @@ with gpiod.Chip('gpiochip0') as chip:
             else:
                 # Send only if no motion was detected for 30 minutes
                 if (recording and time.time() - motionTimestamp > 1800):
-                    # Send message "/stop" without arguments
-                    liblo.send(target, "/stop")
+                    # Send message "/play" with int argument
+                    liblo.send(target, "/play", 0)
+                    # Send messages to save the project
+                    time.sleep(1)
+                    liblo.send(target, "/project/save")
                     recording = False;
                     print("stop")
             time.sleep(0.1)
@@ -43,3 +46,4 @@ with gpiod.Chip('gpiochip0') as chip:
         print(err)
     except KeyboardInterrupt:
         sys.exit(130)
+
